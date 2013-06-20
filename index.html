@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<head>
+	<link rel="image_src" href="http://numbers.ertops.com/logo.jpg" />
+	<title>Listen to the numbers</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<style>
+.voice-playing {
+	opacity: 1;
+}
+
+.voice-stopped {
+	opacity: 0;
+}
+
+.text-visible {
+	transition: opacity 0.5s;
+-webkit-transition: opacity 0.5s; /* Safari */
+}
+
+/* This would have been so useful ...
+   Leaving it here as an idea (it doesn't work, volume isn't a style)
+*/
+audio {
+	transition: volume 0.2s;
+-webkit-transition: volume 0.2s; /* Safari */
+}
+
+[id="music"].voice-playing {
+	volume: 0.5;
+}
+[id="music"].voice-stopped {
+	volume: 1;
+}
+
+[id=voice].voice-playing {
+	volume: 0.9;
+}
+[id=voice].voice-stopped {
+	volume: 0;
+}
+
+body {
+	margin: 0;
+	background: black;
+	color: white;
+}
+
+.fullscreen-container {
+	position: fixed;
+	top: 0; bottom: 0; left: 0; right: 0;
+	vertical-align: middle;
+}
+
+.footer {
+	font-size: 0.8em;
+	position: fixed;
+	bottom: 0.4em;
+	left: 0;
+	right: 0;
+	text-align: center;
+	color: lightgrey;
+}
+
+A:link {text-decoration: none; color: lightgrey; }
+A:visited {text-decoration: none; color: lightgrey;}
+A:active {text-decoration: none; color: lightgrey; }
+A:hover {text-decoration: underline; color: lightgreen;}
+
+html, body, .a {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+}
+
+.a {
+	display: table;
+}
+
+.b {
+	display: table-cell;
+	margin: 0;
+	padding: 0;
+
+	text-align: center;
+	vertical-align: middle;
+}
+
+.c {
+	margin: auto;
+}
+	</style>
+
+</head>
+
+<body>
+	<div class="a fullscreen-container">
+		<div class="b">
+			<div class="c text-visible voice-mon voice-stopped" style="font-size: 314%; opacity=0; vertical-align: center; ">
+				Listen to the <a href='http://en.wikipedia.org/wiki/Computer-generated'>magic</a> <br />
+				<span style="font-size: 0.4em; position:relative; top:-1.3em;">(<a href="" onclick='event.preventDefault();(document.body.requestFullScreen || document.body.webkitRequestFullScreen).apply(document.body);'>press f11 for fullscreen effect</a>)</span>
+			</div>
+		</div>
+	</div>
+	<div class="footer">
+		<span class="data-remaining"></span> <br />
+		developed by <a class="skmp" href="http://github.com/skmp">skmp</a> | using <a href="http://acapela-group.com/text-to-speech-interactive-demo.html">acapela</a>, <a href="http://longplayer.org/">longplayer</a> and <a href="http://numbersapi.com/"> numbersapi</a> | r3 <br />
+		<a href="http://github.com/skmp/numbers">fork me on github</a> | tested on chrome, firefox, safari, IE10, Mobile android, Mobile safari. Doesn't work on Opera.
+	</div>
+	<div style="visibility:hidden">
+		<audio id="music" class="voice-mon" src="http://stream.spc.org:8008/longplayer" controls autoplay="autoplay" onplaying="music(true)"> </audio> <br />
+		<audio id="voice" class="voice-mon" src="" controls autoplay="" onplay="voice(true)" onended="voice(false)"> </audio>
+	</div>
+
+	<script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+
+	<script>
+var tts_sonid = {
+	sonid6: [
+		'Tyler'
+	],
+	sonid7: [
+		'Deepa' 
+	],
+	sonid8: [
+		'Graham' ,
+		'Lucy' ,
+		'Nizareng' ,
+		'Peter' ,
+		'QueenElizabeth' ,
+		'Rachel' ,
+		'PeterHappy' ,
+		'PeterSad' ,
+		'Rosie' ,
+		'Harry' 
+	],
+	sonid9: [
+		'Heather' ,
+		'Kenny' ,
+		'Laura' ,
+		'Micah' ,
+		'Nelly' ,
+		'Ryan' ,
+		'Saul' ,
+		'Tracy' ,
+		'Will' ,
+		'WillOldMan' ,
+		'WillUpClose' ,
+		'WillLittleCreature' ,
+		'WillFromAfar' ,
+		'WillBadGuy' ,
+		'WillHappy' ,
+		'WillSad' ,
+		'Josh' ,
+		'Ella'
+	]
+};
+
+var nextQuote = "Let this roll, and magic happens!";
+var nextQuoteh = nextQuote;
+
+var ntype=[ 'trivia', 'math', 'date', 'year'];
+
+function randomProperty (obj) {
+    var keys = Object.keys(obj)
+    var key = keys[Math.random() * keys.length | 0];
+    var o = obj[key];
+
+    return { key: key, val: o };
+};
+
+function randomValue(obj) { return randomProperty(obj).val; }
+function randomKey(obj) { return randomProperty(obj).key; }
+
+document.addEventListener('click', function(event) {
+	event.target.target = "_blank";
+	if (event.target.tagName == "A" && (event.target.href == document.location.href))
+	{
+		event.target.href = 'http://numbersapi.com/#' + $(event.target).text() + '/' + randomValue(ntype);
+	}
+}, true);
+
+function voice(v) {
+	var bg=$('#music')[0];
+	bg.volume = v ? 0.8 : 1;
+
+	var vc=$('#voice')[0];
+	vc.volume = v ? 0.4 : 0;
+
+
+	var vm = $(".voice-mon");
+
+	vm.removeClass('voice-playing');
+	vm.removeClass('voice-stopped');
+
+	if (v)
+		vm.addClass('voice-playing');
+	else
+		vm.addClass('voice-stopped');
+
+	if (!v && auto) {
+    	load_random();
+		auto=setTimeout(function() { 
+			$(".text-visible").html(nextQuoteh);
+			play(); 
+		}, (auto==-1 ? 4000 : 13000) + 7000*Math.random());
+  	}
+}
+
+var quotes = [[],[],[]];
+
+function fill_random() {
+	trivia = quotes[0];
+	days = quotes[1];
+	years = quotes[2];
+
+	if (trivia.length == 0) {
+		for(var i = 0; i != 256; i++)
+			for (var j = 0; j != 2; j++)
+				trivia.push( i + '/' + ntype[j] );
+	}
+
+	if (days.length == 0) {
+    	for(var i = 0 ; i != 367; i++)
+			days.push( i + '/' + ntype[2] );
+	}
+
+	if (years.length == 0) {
+    	for(var i = -2100 ; i != 2100; i++)
+			years.push( i + '/' + ntype[3] );
+	}
+}
+
+function get_random() {
+        var cat = randomValue(quotes);
+        var idx = Math.random()*cat.length | 0;
+        var path = cat[idx];
+        cat.splice(idx,1);
+        $(".data-remaining").html("Trivia <a href=''>" + quotes[0].length + "</a> | Days <a href>" + quotes[1].length + "</a> | Years <a href>" + quotes[2].length + '</a>');
+        return path;
+}
+
+
+function join_annotate(l) {
+	var z=[];
+	for (var i=0;i!=l.length;i++) {
+		var k = l[i];
+		z.push(!isFinite(k) ? k : ('<a href>' + k + '</a>'));
+	}
+
+	return z.join(' ').replace(/\{(th)\}/gi,'<sup>$1</sup>');
+}
+
+function fix_tts(l) {
+	return l.replace(/\{(th)\}/gi,'$1');
+}
+
+function load_random() {
+	fill_random();
+	var path = get_random();
+	var url = 'http://numbersapi.com/' + path;
+	var urlb = 'http://numbersapi.com/#' + path;
+	$.ajax(url, { 
+		success: function(data) {
+			var h;
+			var l = data.split(' ');
+			if (isFinite(l[0]))
+				h = "<a href='" + urlb + "'>" + l[0] + "</a> " + join_annotate(l.slice(1));
+			else
+				h = "<a href='" + urlb + "'>" + l[0] + " " + l[1] + "</a> " + join_annotate(l.slice(2));
+
+			nextQuote=data;
+			nextQuoteh=h;
+		}
+	});
+}
+
+function music(v) {
+		setTimeout(function() { 	
+			$(".text-visible").removeClass('voice-stopped');
+			$(".text-visible").addClass('voice-playing');
+		 }, 1000);
+
+	if (v) {
+		setTimeout(function() { auto=-1; play(); load_random(); }, 1200);
+	}
+}
+
+function play() {
+	var sonid = randomProperty(tts_sonid);
+	var voice = randomProperty(sonid.val).val;
+
+	$.ajax('http://tts.ertops.com?q=' + encodeURIComponent(fix_tts(nextQuote)) + '&s=' + sonid.key + '&v=' + voice, { 
+		success: function(data) { 
+			data=$.parseJSON(data); 
+			console.log(data.data); 
+			var ap=$('#voice')[0];
+			ap.src=data.data; 
+			ap.pause(); 
+			ap.play(); 
+		} 
+	});
+}
+
+$('#music')[0].play();
+
+	</script>
+</body>
