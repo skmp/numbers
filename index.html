@@ -240,12 +240,33 @@ function get_random() {
         return path;
 }
 
+function isFirstUpper(s) {
+	return s[0].toUpperCase() == s[0];
+}
+
+function wikify(z,l,i) {
+	var m = l[i++];
+
+	while (i<l.length && isFirstUpper(l[i]))
+		m+=" " + l[i++];
+
+	var wf = m.replace(/ /g,'_').replace(/[^A-z_]/g,'');
+	z.push('<a href="http://en.wikipedia.org/wiki/' + wf + '">' + m + '</a>');
+
+	return i-1;
+}
 
 function join_annotate(l) {
 	var z=[];
 	for (var i=0;i!=l.length;i++) {
 		var k = l[i];
-		z.push(!isFinite(k) ? k : ('<a href>' + k + '</a>'));
+		if (isFinite(k))		
+			z.push('<a href>' + k + '</a>');
+		else if (isFirstUpper(k))
+			i=wikify(z,l,i);
+		else
+			z.push(k);
+
 	}
 
 	return z.join(' ').replace(/\{(th)\}/gi,'<sup>$1</sup>');
