@@ -346,11 +346,16 @@ function isFirstUpper(s) {
 function wikify(z,l,i) {
 	var m = l[i++];
 
-	while (i<l.length && isFirstUpper(l[i]))
-		m+=" " + l[i++];
+	while (i<l.length && isFirstUpper(l[i]) && !isFinite(l[i])) {
+		m+=" " + l[i];
+		if (l[i++].indexOf(',') != -1)
+			break;
+	}
 
-	var wf = removeDiacritics(m.replace(/ /g,'_').replace(/[^A-z_]/g,''));
-	z.push('<a href="http://en.wikipedia.org/wiki/' + wf + '">' + m + '</a>');
+	var wf = removeDiacritics(m).replace(/ -/g,'_').replace(/[^A-z0-9_]/g,'');
+	var a = m.match(/[,\.]/g) || [ ' ' ];
+	var b = m.replace(/[,\.]/g,"");
+	z.push('<a href="http://en.wikipedia.org/wiki/' + wf + '">' + b + '</a>' + a[0]);
 
 	return i-1;
 }
