@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-	<link rel="image_src" href="http://numbers.ertops.com/logo.jpg" />
+	<link rel="image_src" href="logo.jpg" />
 	<title>Listen to the numbers</title>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<style>
@@ -352,7 +352,7 @@ function wikify(z,l,i) {
 			break;
 	}
 
-	var wf = removeDiacritics(m).replace(/ -/g,'_').replace(/[^A-z0-9_]/g,'');
+	var wf = removeDiacritics(m).replace(/[ -]/g,'_').replace(/[^A-z0-9_]/g,'');
 	var a = m.match(/[,\.]/g) || [ ' ' ];
 	var b = m.replace(/[,\.]/g,"");
 	z.push('<a href="http://en.wikipedia.org/wiki/' + wf + '">' + b + '</a>' + a[0]);
@@ -423,7 +423,7 @@ function play() {
 	var sonid = randomProperty(tts_sonid);
 	var voice = randomProperty(sonid.val).val;
 
-	$.ajax('http://tts.ertops.com?q=' + encodeURIComponent(fix_tts(nextQuote)) + '&s=' + sonid.key + '&v=' + voice, { 
+	$.ajax('tts.php?q=' + encodeURIComponent(fix_tts(nextQuote)) + '&s=' + sonid.key + '&v=' + voice, { 
 		success: function(data) { 
 			data=$.parseJSON(data); 
 			console.log(data.data); 
